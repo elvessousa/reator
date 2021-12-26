@@ -1,8 +1,11 @@
-mod files;
+mod file;
+mod template;
 mod utils;
 
+use file::ReactFile;
 use std::env;
 use std::error::Error;
+use template::Template;
 
 #[derive(Debug)]
 pub struct Arguments {
@@ -25,12 +28,24 @@ impl Arguments {
 
         let template = match args.next() {
             Some(arg) => arg,
-            None => return Err("No template informed."),
+            None => {
+                if command.contains("h") {
+                    "".to_string()
+                } else {
+                    return Err("No template informed.");
+                }
+            }
         };
 
         let path = match args.next() {
             Some(arg) => arg,
-            None => return Err("No path informed."),
+            None => {
+                if command.contains("h") {
+                    "".to_string()
+                } else {
+                    return Err("No template informed.");
+                }
+            }
         };
 
         Ok(Arguments {
@@ -53,31 +68,7 @@ impl Commands {
         match command {
             "create" | "new" | "n" => Some(Commands::New),
             "delete" | "del" | "d" => Some(Commands::Delete),
-            "help" | "h" | "?" => Some(Commands::Help),
-            _ => None,
-        }
-    }
-}
-
-#[derive(Debug)]
-pub enum Templates {
-    Component,
-    Context,
-    NextPage,
-    NextDoc,
-    Style,
-    Styled,
-}
-
-impl Templates {
-    fn from(template: &str) -> Option<Self> {
-        match template {
-            "component" | "rc" => Some(Templates::Component),
-            "context" | "ct" => Some(Templates::Context),
-            "next-page" | "np" => Some(Templates::NextPage),
-            "next-doc" | "nd" => Some(Templates::NextDoc),
-            "style" | "s" => Some(Templates::Style),
-            "styled" | "sc" => Some(Templates::Component),
+            "help" | "h" => Some(Commands::Help),
             _ => None,
         }
     }
@@ -104,8 +95,10 @@ pub fn run(args: Arguments) -> Result<(), Box<dyn Error>> {
 }
 
 fn parse_command<'a>(template: &'a String, path: &String) {
-    match Templates::from(template) {
-        Some(_) => files::create(&template, path).unwrap_or_else(|error| {
+    let file = ReactFile;
+
+    match Template::from(template) {
+        Some(_) => file.create(&template, path).unwrap_or_else(|error| {
             eprintln!("Error! {}", error);
             std::process::exit(1);
         }),
