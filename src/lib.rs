@@ -6,12 +6,14 @@ use file::ReactFile;
 use std::env;
 use std::error::Error;
 use template::Template;
+use utils::Message;
 
 #[derive(Debug)]
 pub struct Arguments {
     pub command: String,
     pub template: String,
     pub path: String,
+    pub option: String,
 }
 
 impl Arguments {
@@ -30,7 +32,7 @@ impl Arguments {
             Some(arg) => arg,
             None => {
                 if command.contains("h") {
-                    "".to_string()
+                    "".to_owned()
                 } else {
                     return Err("No template informed.");
                 }
@@ -41,17 +43,23 @@ impl Arguments {
             Some(arg) => arg,
             None => {
                 if command.contains("h") {
-                    "".to_string()
+                    "".to_owned()
                 } else {
                     return Err("No template informed.");
                 }
             }
         };
 
+        let option = match args.next() {
+            Some(arg) => arg,
+            None => "".to_owned(),
+        };
+
         Ok(Arguments {
             command,
             template,
             path,
+            option,
         })
     }
 }
@@ -59,7 +67,6 @@ impl Arguments {
 #[derive(Debug)]
 pub enum Commands {
     New,
-    Delete,
     Help,
 }
 
@@ -67,9 +74,20 @@ impl Commands {
     fn from(command: &str) -> Option<Self> {
         match command {
             "create" | "new" | "n" => Some(Commands::New),
-            "delete" | "del" | "d" => Some(Commands::Delete),
             "help" | "h" => Some(Commands::Help),
             _ => None,
+        }
+    }
+
+    fn parse(template: &str, path: &str) {
+        let file = ReactFile;
+
+        match Template::from(template) {
+            Some(_) => file.create(&template, path).unwrap_or_else(|error| {
+                Message::print(Message::ErrorMsg, format!("{}", error).as_str());
+                std::process::exit(1);
+            }),
+            None => println!("Invalid template"),
         }
     }
 }
@@ -78,30 +96,18 @@ pub fn run(args: Arguments) -> Result<(), Box<dyn Error>> {
     let command = args.command;
     let template = args.template;
     let path = args.path;
+    // let option = args.option;
 
     match Commands::from(&command) {
-        Some(Commands::New) => parse_command(&template, &path),
-        Some(Commands::Delete) => println!("File deleted"),
+        Some(Commands::New) => Commands::parse(&template, &path),
         Some(Commands::Help) => utils::help(),
         None => println!("No valid command found"),
     }
 
-    println!(
-        "Command: {} / Template: {} / Path: {}",
-        command, template, path
-    );
+    /* println!(
+        "Command: {} / Template: {} / Path: {} / Option: {}",
+        command, template, path, option
+    ); */
 
     Ok(())
-}
-
-fn parse_command<'a>(template: &'a String, path: &String) {
-    let file = ReactFile;
-
-    match Template::from(template) {
-        Some(_) => file.create(&template, path).unwrap_or_else(|error| {
-            eprintln!("Error! {}", error);
-            std::process::exit(1);
-        }),
-        None => println!("Invalid template"),
-    }
 }
