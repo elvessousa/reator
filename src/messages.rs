@@ -1,33 +1,38 @@
+const VERSION: &'static str = env!("CARGO_PKG_VERSION");
+
 pub enum Message {
-    ErrorMsg,
+    AboutMsg,
     CreateMsg,
+    ErrorMsg,
     FoundMsg,
     WarningMsg,
 }
 
 impl Message {
     pub fn print(msg: Message, text: &str) -> () {
+        let bg_green = "\x1b[42m";
+        let bg_red = "\x1b[41m";
+        let bg_yellow = "\x1b[43m";
         let black = "\x1b[30;1m";
+        let bold = "\x1b[1m";
         let cyan = "\x1b[36;1m";
         let dim = "\x1b[2m";
-        let reset = "\x1b[0m";
-        let bg_red = "\x1b[41m";
-        let bg_green = "\x1b[42m";
-        let bg_yellow = "\x1b[43m";
         let green = "\x1b[32m";
+        let reset = "\x1b[0m";
 
         let arrow = format!(" {}->{}", dim, reset);
+        let failed = format!("{}{} ERROR! {}", bg_red, black, reset);
         let info = format!("{}{}{}", cyan, text, reset);
         let ok = format!("{}{} OK! {}", bg_green, black, reset);
-        let failed = format!("{}{} ERROR! {}", bg_red, black, reset);
-        let warning = format!("{}{} WARN {}", bg_yellow, black, reset);
         let success = format!("{}{}{}", green, text, reset);
+        let warning = format!("{}{} WARN {}", bg_yellow, black, reset);
 
         let message = match msg {
-            Message::CreateMsg => format!(" {} File {} created!\n", ok, success),
+            Message::AboutMsg => format!("\n :: {}Reator {}{}\n", bold, VERSION, reset),
+            Message::CreateMsg => format!(" {} File {} created!", ok, success),
             Message::ErrorMsg => format!(" {} {}\n", failed, text),
-            Message::FoundMsg => format!(" {} A {} file was found.\n", arrow, info),
-            Message::WarningMsg => format!(" {} {}\n", warning, text),
+            Message::FoundMsg => format!("{} A {} file was found", arrow, info),
+            Message::WarningMsg => format!(" {} {}", warning, text),
         };
 
         eprintln!("{}", message);
@@ -39,7 +44,7 @@ pub fn help() {
     let reset = "\x1b[0m";
 
     println!(
-        r"Reator: Simple React CLI for React Projects
+        r" Simple React CLI for React Projects
 
 {} 
     reator <command> <template> <path> [options]
@@ -68,10 +73,10 @@ pub fn help() {
     --i / --iprops           Creates a component with a 'Props' interface        
     --t / --tprops           Creates a component with a 'Props' type             
     ",
-        format!("{}Usage:{}", bold, reset),
-        format!("{}Commands:{}", bold, reset),
-        format!("{}Templates:{}", bold, reset),
-        format!("{}Path:{}", bold, reset),
-        format!("{}Options:{}", bold, reset),
+        format!(" {}Usage:{}", bold, reset),
+        format!(" {}Commands:{}", bold, reset),
+        format!(" {}Templates:{}", bold, reset),
+        format!(" {}Path:{}", bold, reset),
+        format!(" {}Options:{}", bold, reset),
     )
 }

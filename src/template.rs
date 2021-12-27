@@ -9,6 +9,7 @@ pub enum Template {
     NextDoc,
     StatelessComponent,
     Style,
+    StyleModule,
     Styled,
 }
 
@@ -22,6 +23,8 @@ impl Template {
             "next-doc" | "nd" => Some(Template::NextDoc),
             "stateless" | "st" => Some(Template::StatelessComponent),
             "style" | "s" => Some(Template::Style),
+            "css-module" | "css" => Some(Template::StyleModule),
+            "sass-module" | "scss" => Some(Template::StyleModule),
             "styled" | "sc" => Some(Template::Styled),
             _ => None,
         }
@@ -38,6 +41,7 @@ impl Template {
             Some(Template::NextDoc) => body.document(),
             Some(Template::StatelessComponent) => body.stateless(name),
             Some(Template::Style) => body.style(),
+            Some(Template::StyleModule) => body.style_module(),
             Some(Template::Styled) => body.styled_component(),
             None => "".to_string(),
         }

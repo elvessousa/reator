@@ -1,12 +1,11 @@
 mod file;
+mod messages;
 mod template;
-mod utils;
 
 use file::ReactFile;
-use std::env;
-use std::error::Error;
+use messages::Message;
+use std::{env, error::Error};
 use template::Template;
-use utils::Message;
 
 #[derive(Debug)]
 pub struct Arguments {
@@ -19,7 +18,7 @@ pub struct Arguments {
 impl Arguments {
     pub fn new(mut args: env::Args) -> Result<Arguments, &'static str> {
         if args.len() < 1 {
-            utils::help();
+            messages::help();
             return Err("Not enough arguments");
         }
 
@@ -73,21 +72,48 @@ pub enum Commands {
 impl Commands {
     fn from(command: &str) -> Option<Self> {
         match command {
-            "create" | "new" | "n" => Some(Commands::New),
-            "help" | "h" => Some(Commands::Help),
+            "create" | "new" | "n" => Some(Self::New),
+            "help" | "h" => Some(Self::Help),
             _ => None,
         }
     }
 
-    fn parse(template: &str, path: &str) {
+    fn parse(template: &str, path: &str, option: &str) {
         let file = ReactFile;
+        let option = Options::from(option);
 
         match Template::from(template) {
-            Some(_) => file.create(&template, path).unwrap_or_else(|error| {
-                Message::print(Message::ErrorMsg, format!("{}", error).as_str());
-                std::process::exit(1);
-            }),
+            Some(_) => file
+                .create(&template, path, option)
+                .unwrap_or_else(|error| {
+                    let error_msg = format!("{}", error);
+
+                    Message::print(Message::ErrorMsg, error_msg.as_str());
+                    std::process::exit(1);
+                }),
             None => println!("Invalid template"),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub enum Options {
+    WithStyle,
+    CSSModule,
+    SassModule,
+    InterfaceProps,
+    TypeProps,
+}
+
+impl Options {
+    pub fn from(option: &str) -> Option<Self> {
+        match option {
+            "--with-style" | "-ws" => Some(Self::WithStyle),
+            "--css" => Some(Self::CSSModule),
+            "--sass" => Some(Self::SassModule),
+            "--iprops" | "-i" => Some(Self::InterfaceProps),
+            "--tprops" | "-t" => Some(Self::TypeProps),
+            _ => None,
         }
     }
 }
@@ -96,18 +122,17 @@ pub fn run(args: Arguments) -> Result<(), Box<dyn Error>> {
     let command = args.command;
     let template = args.template;
     let path = args.path;
-    // let option = args.option;
+    let option = args.option;
+
+    Message::print(Message::AboutMsg, "");
 
     match Commands::from(&command) {
-        Some(Commands::New) => Commands::parse(&template, &path),
-        Some(Commands::Help) => utils::help(),
+        Some(Commands::New) => Commands::parse(&template, &path, &option),
+        Some(Commands::Help) => messages::help(),
         None => println!("No valid command found"),
     }
 
-    /* println!(
-        "Command: {} / Template: {} / Path: {} / Option: {}",
-        command, template, path, option
-    ); */
+    println!("\n Done!\n");
 
     Ok(())
 }

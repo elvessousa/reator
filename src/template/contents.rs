@@ -56,6 +56,10 @@ impl Content {
         strings::REACT_STYLE.to_owned()
     }
 
+    pub fn style_module(&self) -> String {
+        strings::REACT_STYLE_MODULE.to_owned()
+    }
+
     pub fn styled_component(&self) -> String {
         strings::REACT_STYLED.to_owned()
     }
