@@ -3,8 +3,10 @@ mod contents;
 #[derive(Debug)]
 pub enum Template {
     Component,
+    CompoundComponent,
     Context,
     NativeComponent,
+    NativeCompoundComponent,
     NextPage,
     NextDoc,
     StatelessComponent,
@@ -17,8 +19,10 @@ impl Template {
     pub fn from(template: &str) -> Option<Self> {
         match template {
             "component" | "rc" => Some(Template::Component),
-            "native" | "rnc" => Some(Template::NativeComponent),
-            "context" | "ctx" => Some(Template::Context),
+            "compound-component" | "cc" => Some(Template::CompoundComponent),
+            "native" | "rn" => Some(Template::NativeComponent),
+            "compound-native" | "cn" => Some(Template::NativeCompoundComponent),
+            "context" | "cx" => Some(Template::Context),
             "next-page" | "np" => Some(Template::NextPage),
             "next-doc" | "nd" => Some(Template::NextDoc),
             "stateless" | "st" => Some(Template::StatelessComponent),
@@ -35,7 +39,9 @@ impl Template {
 
         match Template::from(template) {
             Some(Template::Component) => body.component(name),
+            Some(Template::CompoundComponent) => body.compound(name),
             Some(Template::NativeComponent) => body.native(name),
+            Some(Template::NativeCompoundComponent) => body.native_compound(name),
             Some(Template::Context) => body.context(name),
             Some(Template::NextPage) => body.page(name),
             Some(Template::NextDoc) => body.document(),
@@ -50,7 +56,9 @@ impl Template {
     pub fn to_path(template: &str) -> String {
         match Template::from(template) {
             Some(Template::Component) => "./src/components/".to_owned(),
+            Some(Template::CompoundComponent) => "./src/components/".to_owned(),
             Some(Template::NativeComponent) => "./src/components/".to_owned(),
+            Some(Template::NativeCompoundComponent) => "./src/components/".to_owned(),
             Some(Template::Context) => "./src/contexts/".to_owned(),
             Some(Template::NextPage) => "./src/pages/".to_owned(),
             Some(Template::NextDoc) => "./src/pages/".to_owned(),

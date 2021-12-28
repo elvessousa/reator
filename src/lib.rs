@@ -4,7 +4,7 @@ mod template;
 
 use file::ReactFile;
 use messages::Message;
-use std::{env, error::Error};
+use std::{env, error::Error, path::Path};
 use template::Template;
 
 #[derive(Debug)]
@@ -88,7 +88,7 @@ impl Commands {
                 .unwrap_or_else(|error| {
                     let error_msg = format!("{}", error);
 
-                    Message::print(Message::ErrorMsg, error_msg.as_str());
+                    Message::print(Message::Error, error_msg.as_str());
                     std::process::exit(1);
                 }),
             None => println!("Invalid template"),
@@ -98,21 +98,17 @@ impl Commands {
 
 #[derive(Debug)]
 pub enum Options {
-    WithStyle,
+    ReactNativeStyle,
     CSSModule,
     SassModule,
-    InterfaceProps,
-    TypeProps,
 }
 
 impl Options {
     pub fn from(option: &str) -> Option<Self> {
         match option {
-            "--with-style" | "-ws" => Some(Self::WithStyle),
+            "--reactnative-style" | "-rns" => Some(Self::ReactNativeStyle),
             "--css" => Some(Self::CSSModule),
             "--sass" => Some(Self::SassModule),
-            "--iprops" | "-i" => Some(Self::InterfaceProps),
-            "--tprops" | "-t" => Some(Self::TypeProps),
             _ => None,
         }
     }
@@ -124,7 +120,14 @@ pub fn run(args: Arguments) -> Result<(), Box<dyn Error>> {
     let path = args.path;
     let option = args.option;
 
-    Message::print(Message::AboutMsg, "");
+    Message::print(Message::About, "");
+
+    validate_project()?;
+
+    if Path::new("./tsconfig.json").exists() {
+        Message::print(Message::Found, "tsconfig.json");
+        Message::print(Message::Info, "You're using TypeScript.");
+    }
 
     match Commands::from(&command) {
         Some(Commands::New) => Commands::parse(&template, &path, &option),
@@ -135,4 +138,15 @@ pub fn run(args: Arguments) -> Result<(), Box<dyn Error>> {
     println!("\n Done!\n");
 
     Ok(())
+}
+
+pub fn validate_project() -> Result<(), Box<dyn Error>> {
+    let project_file = Path::new("./package.json");
+    if project_file.exists() {
+        Ok(())
+    } else {
+        Message::print(Message::NotFound, "package.json");
+        Message::print(Message::Info, "Make sure you are on a valid react project, and running this tool from its root directory.");
+        std::process::exit(1);
+    }
 }

@@ -41,7 +41,7 @@ $ reator command template ComponentName [--option]
 ## Todos
 
 - Check for package.json on component creation
-- Add scss/sass/css modules option
+- [x] Add scss/sass/css modules option
 - Add component props option
 - Deal with filename cases (PascalCase, [nextpage])
 - Add configuration options via JSON
