@@ -6,13 +6,15 @@ pub struct Content;
 
 impl Content {
     fn imports(&self, kind: &str) -> String {
-        match kind {
-            "rc" | "cc" => strings::REACT_IMPORT.to_owned(),
-            "rn" | "cn" => strings::REACT_NATIVE_IMPORT.to_owned(),
-            "tcc" => strings::REACT_TYPED_IMPORT.to_owned(),
-            "tcn" => strings::REACT_NATIVE_TYPED_IMPORT.to_owned(),
-            _ => "".to_owned(),
-        }
+        let import = match kind {
+            "rc" | "cc" => strings::REACT_IMPORT,
+            "rn" | "cn" => strings::REACT_NATIVE_IMPORT,
+            "tcc" => strings::REACT_TYPED_IMPORT,
+            "tcn" => strings::REACT_NATIVE_TYPED_IMPORT,
+            _ => "",
+        };
+
+        import.to_owned()
     }
 
     fn typings(&self, kind: &str) -> String {
@@ -62,18 +64,14 @@ impl Content {
     }
 
     pub fn native(&self, name: &str) -> String {
-        format!(
-            "{}",
-            self.body(name, format!("<View><Text>{}</Text></View>", name), "rn")
-        )
+        let contents = format!("<View><Text>{}</Text></View>", name);
+        format!("{}", self.body(name, contents, "rn"))
     }
 
     pub fn native_compound(&self, name: &str) -> String {
         let kind = if self.is_typescript() { "tcn" } else { "cn" };
-        format!(
-            "{}",
-            self.body(name, format!("<View><Text>{}</Text></View>", name), kind)
-        )
+        let contents = format!("<View><Text>{}</Text></View>", name);
+        format!("{}", self.body(name, contents, kind))
     }
 
     pub fn context(&self, name: &str) -> String {

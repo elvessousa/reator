@@ -53,10 +53,10 @@ impl ReactFile {
         let dirname = Template::to_path(template);
         let filename = self.filename(template, name);
 
-        let extension = match Template::from(template) {
-            Some(Template::RNStyle) | Some(Template::Styled) => self.extension(true),
-            Some(Template::StyleModule) => ".css",
-            Some(_) | None => self.extension(false),
+        let extension = match Template::from(template).unwrap() {
+            Template::RNStyle | Template::Styled => self.extension(true),
+            Template::StyleModule => ".css",
+            _ => self.extension(false),
         };
 
         let name_as_folder = format!("{}{}/", dirname, filename);
@@ -86,10 +86,10 @@ impl ReactFile {
     }
 
     fn filename(&self, template: &str, name: &str) -> String {
-        match Template::from(template) {
-            Some(Template::NextDoc) => "_document".to_owned(),
-            Some(Template::NextPage) => name.to_lowercase(),
-            Some(_) | None => name.to_owned(),
+        match Template::from(template).unwrap() {
+            Template::NextDoc => "_document".to_owned(),
+            Template::NextPage => name.to_lowercase(),
+            _ => name.to_owned(),
         }
     }
 
