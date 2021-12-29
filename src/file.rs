@@ -29,7 +29,7 @@ impl ReactFile {
         match option {
             Some(Options::ReactNativeStyle) => {
                 self.write(&indexpath, &template, &name)?;
-                self.write(&stylepath, "style", &name)?;
+                self.write(&stylepath, "native-style", &name)?;
             }
             Some(_) => {
                 self.write(&indexpath, &template, &name)?;
@@ -52,8 +52,15 @@ impl ReactFile {
     fn path(&self, template: &str, name: &str, option: &Option<Options>) -> String {
         let dirname = Template::to_path(template);
         let filename = self.filename(template, name);
+
+        let extension = match Template::from(template) {
+            Some(Template::RNStyle) | Some(Template::Styled) => self.extension(true),
+            Some(Template::StyleModule) => ".css",
+            Some(_) | None => self.extension(false),
+        };
+
         let name_as_folder = format!("{}{}/", dirname, filename);
-        let name_as_file = format!("{}{}{}", dirname, filename, self.extension(false));
+        let name_as_file = format!("{}{}{}", dirname, filename, extension);
 
         match option {
             Some(_) => {

@@ -8,10 +8,10 @@ impl Content {
     fn imports(&self, kind: &str) -> String {
         match kind {
             "rc" | "cc" => strings::REACT_IMPORT.to_owned(),
-            "rn" | "cn" => strings::REACT_NATIVE_IMPORT.to_owned(), // done
+            "rn" | "cn" => strings::REACT_NATIVE_IMPORT.to_owned(),
             "tcc" => strings::REACT_TYPED_IMPORT.to_owned(),
             "tcn" => strings::REACT_NATIVE_TYPED_IMPORT.to_owned(),
-            _ => String::from(""),
+            _ => "".to_owned(),
         }
     }
 
@@ -114,7 +114,7 @@ impl Content {
     }
 
     pub fn style_module(&self) -> String {
-        strings::REACT_STYLE_MODULE.to_owned()
+        strings::REACT_CSS_MODULE.to_owned()
     }
 
     pub fn styled_component(&self) -> String {

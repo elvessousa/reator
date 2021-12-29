@@ -78,12 +78,11 @@ impl Commands {
         }
     }
 
-    fn parse(template: &str, path: &str, option: &str) {
-        let file = ReactFile;
-        let option = Options::from(option);
+    fn parse(&self, template: &str, path: &str, option: &str) {
+        let option = self.validate_styling_options(template, &option);
 
         match Template::from(template) {
-            Some(_) => file
+            Some(_) => ReactFile
                 .create(&template, path, option)
                 .unwrap_or_else(|error| {
                     let error_msg = format!("{}", error);
@@ -92,6 +91,40 @@ impl Commands {
                     std::process::exit(1);
                 }),
             None => println!("Invalid template"),
+        }
+    }
+
+    fn validate_styling_options(&self, template: &str, option: &str) -> Option<Options> {
+        let option = Options::from(option);
+
+        let react_native_msg = "React Native doesn't accept CSS or Sass modules.";
+        let react_context_msg = "One does not simply style a Context API file.";
+        let next_doc_msg = "Styling a Custom Next Document file is useless.";
+        let style_msg = "Adding a style module to a style file is not a wise decision.";
+        let never_happen = "Ignoring it for it now. Let's pretend this never happened.";
+
+        match Template::from(template).unwrap() {
+            Template::NativeComponent | Template::NativeCompoundComponent => {
+                Message::print(Message::Warning, react_native_msg);
+                Message::print(Message::Info, never_happen);
+                None
+            }
+            Template::Context => {
+                Message::print(Message::Warning, react_context_msg);
+                Message::print(Message::Info, never_happen);
+                None
+            }
+            Template::SassModule | Template::RNStyle | Template::Styled => {
+                Message::print(Message::Warning, style_msg);
+                Message::print(Message::Info, never_happen);
+                None
+            }
+            Template::NextDoc => {
+                Message::print(Message::Warning, next_doc_msg);
+                Message::print(Message::Info, never_happen);
+                None
+            }
+            _ => option,
         }
     }
 }
@@ -107,32 +140,31 @@ impl Options {
     pub fn from(option: &str) -> Option<Self> {
         match option {
             "--reactnative-style" | "-rns" => Some(Self::ReactNativeStyle),
-            "--css" => Some(Self::CSSModule),
-            "--sass" => Some(Self::SassModule),
+            "--css-module" | "-css" => Some(Self::CSSModule),
+            "--sass-module" | "-sass" => Some(Self::SassModule),
             _ => None,
         }
     }
 }
 
 pub fn run(args: Arguments) -> Result<(), Box<dyn Error>> {
-    let command = args.command;
-    let template = args.template;
-    let path = args.path;
-    let option = args.option;
-
     Message::print(Message::About, "");
 
     validate_project()?;
+
+    let command = Commands::from(&args.command).unwrap();
+    let template = args.template;
+    let path = args.path;
+    let option = args.option;
 
     if Path::new("./tsconfig.json").exists() {
         Message::print(Message::Found, "tsconfig.json");
         Message::print(Message::Info, "You're using TypeScript.");
     }
 
-    match Commands::from(&command) {
-        Some(Commands::New) => Commands::parse(&template, &path, &option),
-        Some(Commands::Help) => messages::help(),
-        None => println!("No valid command found"),
+    match command {
+        Commands::New => command.parse(&template, &path, &option),
+        Commands::Help => messages::help(),
     }
 
     println!("\n Done!\n");
@@ -142,6 +174,7 @@ pub fn run(args: Arguments) -> Result<(), Box<dyn Error>> {
 
 pub fn validate_project() -> Result<(), Box<dyn Error>> {
     let project_file = Path::new("./package.json");
+
     if project_file.exists() {
         Ok(())
     } else {

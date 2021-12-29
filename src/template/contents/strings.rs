@@ -26,7 +26,7 @@ export const styles = StyleSheet.create({
   container: {},
 });"#;
 
-pub const REACT_STYLE_MODULE: &str = ".container {}";
+pub const REACT_CSS_MODULE: &str = ".container {}";
 
 pub const REACT_STYLED: &str =
     "import styled from 'styled-components';\n\nexport const StyledDiv = styled.div``;";

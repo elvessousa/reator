@@ -58,8 +58,8 @@ pub fn help() {
     reator <command> <template> <path> [options]
 
 {}
-    n | new | create        Creates a new file
-    h | help                Shows this screen
+    n | new | create            Creates a new file
+    h | help                    Shows this screen
 
 {}
     rc | component              React Component
@@ -77,7 +77,7 @@ pub fn help() {
     Reator creates folders and files automatically.
 
 {}
-    -rns  | --reactnative-style     Creates a component in a folder, with a style.js    
+    -rns  | --reactnative-style     Creates a React Native Component in a folder, with a style.js    
     -css  | --css-module            Creates a component in a folder, with a CSS Module  
     -sass | --sass-module           Creates a component in a folder, with a Sass Module 
     ",
