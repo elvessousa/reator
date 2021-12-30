@@ -1,6 +1,7 @@
 mod strings;
 
-use std::path::Path;
+use crate::{Arguments, Options};
+use std::{env, path::Path};
 
 pub struct Content;
 
@@ -14,7 +15,25 @@ impl Content {
             _ => "",
         };
 
-        import.to_owned()
+        format!("{}{}\n\n", import, self.style_import())
+    }
+
+    fn style_import(&self) -> String {
+        let args = Arguments::new(env::args()).unwrap();
+        let ext = if self.is_typescript() { ".ts" } else { ".ts" };
+
+        match Options::from(&args.option) {
+            Some(Options::ReactNativeStyle) => {
+                format!("import {{ styles }} from './styles{}';", ext)
+            }
+            Some(Options::CSSModule) => {
+                format!("import styles from './{}{}';", &args.path, ".module.css")
+            }
+            Some(Options::SassModule) => {
+                format!("import styles from './{}{}';", &args.path, ".module.scss")
+            }
+            None => "".to_owned(),
+        }
     }
 
     fn typings(&self, kind: &str) -> String {

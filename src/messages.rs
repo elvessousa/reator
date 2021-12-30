@@ -25,7 +25,7 @@ impl Message {
         let red = "\x1b[31m";
         let reset = "\x1b[0m";
 
-        let sign = format!("{}::{}", dim, reset);
+        let sign = format!("{}::{} ", dim, reset);
         let failed = format!("{}{} ERR {}", bg_red, black, reset);
         let info = format!("{}{}{}", cyan, text, reset);
         let error = format!("{}{}{}", red, text, reset);
