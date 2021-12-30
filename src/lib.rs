@@ -3,7 +3,8 @@ mod messages;
 mod template;
 
 use file::ReactFile;
-use messages::Message;
+use messages::warnings;
+use messages::Message::{self, *};
 use std::{env, error::Error, path::Path};
 use template::Template;
 
@@ -44,7 +45,7 @@ impl Arguments {
                 if command.contains("h") {
                     "".to_owned()
                 } else {
-                    return Err("No template informed.");
+                    return Err("No component name informed.");
                 }
             }
         };
@@ -87,7 +88,7 @@ impl Commands {
                 .unwrap_or_else(|error| {
                     let error_msg = format!("{}", error);
 
-                    Message::print(Message::Error, error_msg.as_str());
+                    Message::print(ErrorMsg, error_msg.as_str());
                     std::process::exit(1);
                 }),
             None => println!("Invalid template"),
@@ -97,31 +98,25 @@ impl Commands {
     fn validate_styling_options(&self, template: &str, option: &str) -> Option<Options> {
         let option = Options::from(option);
 
-        let react_native_msg = "React Native doesn't accept CSS or Sass modules.";
-        let react_context_msg = "One does not simply style a Context API file.";
-        let next_doc_msg = "Styling a Custom Next Document file is useless.";
-        let style_msg = "Adding a style module to a style file is not a wise decision.";
-        let never_happen = "Ignoring it for it now. Let's pretend this never happened.";
-
         match Template::from(template).unwrap() {
             Template::NativeComponent | Template::NativeCompoundComponent => {
-                Message::print(Message::Warning, react_native_msg);
-                Message::print(Message::Info, never_happen);
+                Message::print(WarningMsg, warnings::WARN_INVALID_RN_STYLE);
+                Message::print(InfoMsg, warnings::INFO_NEVER_HAPPEN);
                 None
             }
             Template::Context => {
-                Message::print(Message::Warning, react_context_msg);
-                Message::print(Message::Info, never_happen);
+                Message::print(WarningMsg, warnings::WARN_CONTEXT_STYLING);
+                Message::print(InfoMsg, warnings::INFO_NEVER_HAPPEN);
                 None
             }
             Template::SassModule | Template::RNStyle | Template::Styled => {
-                Message::print(Message::Warning, style_msg);
-                Message::print(Message::Info, never_happen);
+                Message::print(WarningMsg, warnings::WARN_INVALID_STYLE);
+                Message::print(InfoMsg, warnings::INFO_NEVER_HAPPEN);
                 None
             }
             Template::NextDoc => {
-                Message::print(Message::Warning, next_doc_msg);
-                Message::print(Message::Info, never_happen);
+                Message::print(WarningMsg, warnings::WARN_NDOC_STYLING);
+                Message::print(InfoMsg, warnings::INFO_NEVER_HAPPEN);
                 None
             }
             _ => option,
@@ -148,7 +143,7 @@ impl Options {
 }
 
 pub fn run(args: Arguments) -> Result<(), Box<dyn Error>> {
-    Message::print(Message::About, "");
+    Message::print(AboutMsg, "");
 
     validate_project()?;
 
@@ -158,8 +153,8 @@ pub fn run(args: Arguments) -> Result<(), Box<dyn Error>> {
     let option = args.option;
 
     if Path::new("./tsconfig.json").exists() {
-        Message::print(Message::Found, "tsconfig.json");
-        Message::print(Message::Info, "You're using TypeScript.");
+        Message::print(FoundMsg, "tsconfig.json");
+        Message::print(InfoMsg, warnings::INFO_TS);
     }
 
     match command {
@@ -178,8 +173,8 @@ pub fn validate_project() -> Result<(), Box<dyn Error>> {
     if project_file.exists() {
         Ok(())
     } else {
-        Message::print(Message::NotFound, "package.json");
-        Message::print(Message::Info, "Make sure you are on a valid react project, and running this tool from its root directory.");
+        Message::print(NotFoundMsg, "package.json");
+        Message::print(InfoMsg, warnings::INFO_PROJECT_ROOT);
         std::process::exit(1);
     }
 }

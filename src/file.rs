@@ -3,7 +3,7 @@ use std::fs::{self, File};
 use std::io::Write;
 use std::path::Path;
 
-use super::messages::Message;
+use super::messages::Message::{self, *};
 use super::template::Template;
 use super::Options;
 
@@ -45,7 +45,7 @@ impl ReactFile {
         let mut file = File::create(&path)?;
         write!(file, "{}", Template::to_string(template, &name))?;
 
-        Message::print(Message::Create, &path);
+        Message::print(SuccessMsg, &path);
         Ok(())
     }
 
@@ -77,7 +77,7 @@ impl ReactFile {
     fn check_dirs(&self, dirname: &str) {
         if let Err(_) = fs::metadata(&dirname) {
             Message::print(
-                Message::Info,
+                InfoMsg,
                 format!("Creating directory: {}", &dirname).as_str(),
             );
 
@@ -96,10 +96,9 @@ impl ReactFile {
     fn extension(&self, module: bool) -> &str {
         let ts_extension = if module { ".ts" } else { ".tsx" };
 
-        if Path::new("./tsconfig.json").exists() {
-            ts_extension
-        } else {
-            ".js"
+        match Path::new("./tsconfig.json").exists() {
+            true => ts_extension,
+            false => ".js",
         }
     }
 }

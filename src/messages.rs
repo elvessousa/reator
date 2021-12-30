@@ -1,13 +1,15 @@
+pub mod warnings;
+
 const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
 pub enum Message {
-    About,
-    Create,
-    Error,
-    Info,
-    Found,
-    NotFound,
-    Warning,
+    AboutMsg,
+    SuccessMsg,
+    ErrorMsg,
+    InfoMsg,
+    FoundMsg,
+    NotFoundMsg,
+    WarningMsg,
 }
 
 impl Message {
@@ -23,6 +25,7 @@ impl Message {
         let red = "\x1b[31m";
         let reset = "\x1b[0m";
 
+        let sign = format!("{}::{}", dim, reset);
         let failed = format!("{}{} ERR {}", bg_red, black, reset);
         let info = format!("{}{}{}", cyan, text, reset);
         let error = format!("{}{}{}", red, text, reset);
@@ -31,16 +34,13 @@ impl Message {
         let warning = format!("{}{} WARN {}", bg_yellow, black, reset);
 
         let message = match msg {
-            Message::About => format!(
-                "\n {}::{} {}Reator {}{}\n",
-                dim, reset, bold, VERSION, reset
-            ),
-            Message::Create => format!(" {} File {} created!", ok, success),
-            Message::Error => format!(" {} {}\n", failed, text),
-            Message::Info => format!(" {}\n", text),
-            Message::Found => format!(" A {} file was found.", info),
-            Message::NotFound => format!(" {} Couldn't find a {} file.", failed, error),
-            Message::Warning => format!(" {} {}", warning, text),
+            Message::AboutMsg => format!("\n {}{}Reator {}{}\n", sign, bold, VERSION, reset),
+            Message::SuccessMsg => format!(" {} File {} created!", ok, success),
+            Message::ErrorMsg => format!(" {} {}\n", failed, text),
+            Message::InfoMsg => format!(" {}\n", text),
+            Message::FoundMsg => format!(" A {} file was found.", info),
+            Message::NotFoundMsg => format!(" {} Couldn't find a {} file.", failed, error),
+            Message::WarningMsg => format!(" {} {}", warning, text),
         };
 
         eprintln!("{}", message);
@@ -55,7 +55,7 @@ pub fn help() {
         r" Simple React CLI for React Projects
 
 {}
-    reator <command> <template> <path> [options]
+    reator <command> <template> <path> [styling options]
 
 {}
     n | new | create            Creates a new file
@@ -85,6 +85,6 @@ pub fn help() {
         format!(" {}Commands:{}", bold, reset),
         format!(" {}Templates:{}", bold, reset),
         format!(" {}Path:{}", bold, reset),
-        format!(" {}Options:{}", bold, reset),
+        format!(" {}Styling Options:{}", bold, reset),
     )
 }
