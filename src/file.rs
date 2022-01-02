@@ -13,29 +13,29 @@ type OperationResult = Result<(), Box<dyn Error>>;
 
 impl ReactFile {
     pub fn create(&self, template: &str, name: &str, option: Option<Options>) -> OperationResult {
-        let filepath = self.path(template, name, &option);
+        let file_path = self.path(template, name, &option);
 
-        let indexpath = format!("{}{}{}", &filepath, "index", self.extension(false));
-        let rn_stylepath = format!("{}{}", &filepath, "styles");
-        let modulepath = format!("{}{}{}", &filepath, name, ".module");
+        let index_path = format!("{}{}{}", &file_path, "index", self.extension(false));
+        let rnstyle_path = format!("{}{}", &file_path, "styles");
+        let module_path = format!("{}{}{}", &file_path, name, ".module");
 
-        let stylepath = match option {
-            Some(Options::ReactNativeStyle) => format!("{}{}", rn_stylepath, self.extension(true)),
-            Some(Options::CSSModule) => format!("{}{}", modulepath, ".css"),
-            Some(Options::SassModule) => format!("{}{}", modulepath, ".scss"),
+        let style_path = match option {
+            Some(Options::ReactNativeStyle) => format!("{}{}", rnstyle_path, self.extension(true)),
+            Some(Options::CSSModule) => format!("{}{}", module_path, ".css"),
+            Some(Options::SassModule) => format!("{}{}", module_path, ".scss"),
             None => "".to_owned(),
         };
 
         match option {
             Some(Options::ReactNativeStyle) => {
-                self.write(&indexpath, &template, &name)?;
-                self.write(&stylepath, "native-style", &name)?;
+                self.write(&index_path, &template, &name)?;
+                self.write(&style_path, "native-style", &name)?;
             }
             Some(_) => {
-                self.write(&indexpath, &template, &name)?;
-                self.write(&stylepath, "css", &name)?;
+                self.write(&index_path, &template, &name)?;
+                self.write(&style_path, "css", &name)?;
             }
-            None => self.write(&filepath, &template, &name)?,
+            None => self.write(&file_path, &template, &name)?,
         }
 
         Ok(())
@@ -55,6 +55,7 @@ impl ReactFile {
 
         let extension = match Template::from(template).unwrap() {
             Template::RNStyle | Template::Styled => self.extension(true),
+            Template::SassModule => ".scss",
             Template::StyleModule => ".css",
             _ => self.extension(false),
         };
@@ -88,7 +89,7 @@ impl ReactFile {
     fn filename(&self, template: &str, name: &str) -> String {
         match Template::from(template).unwrap() {
             Template::NextDoc => "_document".to_owned(),
-            Template::NextPage => name.to_lowercase(),
+            Template::NextPage | Template::NextStatic | Template::NextSSR => name.to_lowercase(),
             _ => name.to_owned(),
         }
     }
