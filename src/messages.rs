@@ -58,7 +58,7 @@ pub fn help() {
         r" Simple React CLI for React Projects
 
 {}
-    reator <command> <template> <path> [styling options]
+    reator <command> <template> <ComponentName> [styling options]
 
 {}
     n | new | create            Creates a new file
@@ -73,12 +73,12 @@ pub fn help() {
     np  | next-page             Next.js Page
     ns  | next-ssg              Next.js Static Page
     nss | next-ssr              Next.js SSR Page
-    nd  | next-doc              Next.js '_document' file
+    nd  | next-doc              Custom Next.js '_document' file
     s   | style                 CSS Module
     sc  | styled                Styled Component
 
 {}
-    Filename only, no extension needed. 
+    Component name only, no extension needed. 
     Reator creates folders and files automatically.
 
 {}
