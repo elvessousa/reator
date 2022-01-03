@@ -1,7 +1,7 @@
 // Imports
 pub const REACT_IMPORT: &str = "import React from 'react';\n\n";
 pub const REACT_TYPED_IMPORT: &str = "import { ReactNode } from 'react';\n\n";
-pub const REACT_CONTEXT_IMPORT: &str = "import { createContext } from 'react';\n\n";
+pub const REACT_CONTEXT_IMPORT: &str = "import { createContext } from 'react';\n";
 pub const NEXT_TYPED_SSG_IMPORT: &str = "import { GetStaticProps } from 'next';\n\n";
 pub const NEXT_TYPED_SSR_IMPORT: &str = "import { GetServerSideProps } from 'next';\n\n";
 pub const REACT_NATIVE_IMPORT: &str =
