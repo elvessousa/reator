@@ -5,16 +5,20 @@ use std::path::Path;
 
 use super::messages::Message::{self, *};
 use super::template::Template;
-use super::Options;
+use crate::commands::Options;
 
 pub struct ReactFile;
 
 type OperationResult = Result<(), Box<dyn Error>>;
 
 impl ReactFile {
-    pub fn create(&self, template: &str, name: &str, option: Option<Options>) -> OperationResult {
+    pub fn create(
+        &self,
+        template: &Template,
+        name: &str,
+        option: Option<Options>,
+    ) -> OperationResult {
         let file_path = self.path(template, name, &option);
-
         let index_path = format!("{}{}{}", &file_path, "index", self.extension(false));
         let rnstyle_path = format!("{}{}", &file_path, "styles");
         let module_path = format!("{}{}{}", &file_path, name, ".module");
@@ -29,11 +33,11 @@ impl ReactFile {
         match option {
             Some(Options::ReactNativeStyle) => {
                 self.write(&index_path, &template, &name)?;
-                self.write(&style_path, "native-style", &name)?;
+                self.write(&style_path, &Template::RNStyle, &name)?;
             }
             Some(_) => {
                 self.write(&index_path, &template, &name)?;
-                self.write(&style_path, "css", &name)?;
+                self.write(&style_path, &Template::StyleModule, &name)?;
             }
             None => self.write(&file_path, &template, &name)?,
         }
@@ -41,19 +45,19 @@ impl ReactFile {
         Ok(())
     }
 
-    fn write(&self, path: &str, template: &str, name: &str) -> OperationResult {
+    fn write(&self, path: &str, template: &Template, name: &str) -> OperationResult {
         let mut file = File::create(&path)?;
         write!(file, "{}", Template::to_string(template, &name))?;
+        Message::print(CreateMsg(path));
 
-        Message::print(SuccessMsg, &path);
         Ok(())
     }
 
-    fn path(&self, template: &str, name: &str, option: &Option<Options>) -> String {
+    fn path(&self, template: &Template, name: &str, option: &Option<Options>) -> String {
         let dirname = Template::to_path(template);
         let filename = self.filename(template, name);
 
-        let extension = match Template::from(template).unwrap() {
+        let extension = match template {
             Template::RNStyle | Template::Styled => self.extension(true),
             Template::SassModule => ".scss",
             Template::StyleModule => ".css",
@@ -77,17 +81,16 @@ impl ReactFile {
 
     fn check_dirs(&self, dirname: &str) {
         if let Err(_) = fs::metadata(&dirname) {
-            Message::print(
-                InfoMsg,
+            Message::print(InfoMsg(
                 format!("Creating directory: {}", &dirname).as_str(),
-            );
+            ));
 
             fs::create_dir_all(&dirname).unwrap()
         }
     }
 
-    fn filename(&self, template: &str, name: &str) -> String {
-        match Template::from(template).unwrap() {
+    fn filename(&self, template: &Template, name: &str) -> String {
+        match template {
             Template::NextDoc => "_document".to_owned(),
             Template::NextPage | Template::NextStatic | Template::NextSSR => name.to_lowercase(),
             _ => name.to_owned(),
