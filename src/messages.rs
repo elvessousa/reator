@@ -1,19 +1,23 @@
 pub mod warnings;
 
+use std::error::Error;
+
 const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
-pub enum Message {
+pub enum Message<'a> {
     AboutMsg,
-    SuccessMsg,
-    ErrorMsg,
-    InfoMsg,
-    FoundMsg,
-    NotFoundMsg,
-    WarningMsg,
+    CreateMsg(&'a str),
+    ErrorMsg(Box<dyn Error>),
+    MistakeMsg(String),
+    FoundMsg(&'a str),
+    InfoMsg(&'a str),
+    NotFoundMsg(&'a str),
+    SuccessMsg(&'a str),
+    WarningMsg(&'a str),
 }
 
-impl Message {
-    pub fn print(msg: Message, text: &str) {
+impl<'a> Message<'a> {
+    pub fn print(msg: Message) {
         let bg_green = "\x1b[42m";
         let bg_red = "\x1b[41m";
         let bg_yellow = "\x1b[43m";
@@ -26,21 +30,20 @@ impl Message {
         let reset = "\x1b[0m";
 
         let sign = format!("{}::{} ", dim, reset);
-        let failed = format!("{}{} ERR {}", bg_red, black, reset);
-        let info = format!("{}{}{}", cyan, text, reset);
-        let error = format!("{}{}{}", red, text, reset);
+        let fail = format!("{}{} ERR {}", bg_red, black, reset);
         let ok = format!("{}{} OK! {}", bg_green, black, reset);
-        let success = format!("{}{}{}", green, text, reset);
-        let warning = format!("{}{} WARN {}", bg_yellow, black, reset);
+        let warn = format!("{}{} WARN {}", bg_yellow, black, reset);
 
         let message = match msg {
             Message::AboutMsg => format!("\n {}{}Reator {}{}\n", sign, bold, VERSION, reset),
-            Message::SuccessMsg => format!(" {} File {} created!", ok, success),
-            Message::ErrorMsg => format!(" {} {}\n", failed, text),
-            Message::InfoMsg => format!(" {}\n", text),
-            Message::FoundMsg => format!(" A {} file was found.", info),
-            Message::NotFoundMsg => format!(" {} Couldn't find a {} file.", failed, error),
-            Message::WarningMsg => format!(" {} {}", warning, text),
+            Message::CreateMsg(s) => format!(" {} File {}{}{} created!", ok, green, s, reset),
+            Message::ErrorMsg(e) => format!(" {} {}\n", fail, e),
+            Message::FoundMsg(s) => format!(" A {}{}{} file was found.", cyan, s, reset),
+            Message::InfoMsg(s) => format!(" {}\n", s),
+            Message::MistakeMsg(t) => format!(" {} {}\n", fail, t),
+            Message::NotFoundMsg(s) => format!(" {} Not found: {}{}{} file.", fail, red, s, reset),
+            Message::SuccessMsg(s) => format!("\n {} \n", s),
+            Message::WarningMsg(s) => format!(" {} {}", warn, s),
         };
 
         eprintln!("{}", message);
@@ -62,15 +65,17 @@ pub fn help() {
     h | help                    Shows this screen
 
 {}
-    rc | component              React Component
-    cc | compound-component     React Compound Component
-    rn | native                 React Component
-    cn | compound-native        React Native Compound Component
-    ct | context                React Context API file
-    np | next-page              Next.js Page
-    nd | next-doc               Next.js '_document' file
-    s  | style                  CSS Module
-    sc | styled                 Styled Component
+    rc  | component             React Component
+    cc  | compound-component    React Compound Component
+    rn  | native                React Component
+    cn  | compound-native       React Native Compound Component
+    ct  | context               React Context API file
+    np  | next-page             Next.js Page
+    ns  | next-ssg              Next.js Static Page
+    nss | next-ssr              Next.js SSR Page
+    nd  | next-doc              Next.js '_document' file
+    s   | style                 CSS Module
+    sc  | styled                Styled Component
 
 {}
     Filename only, no extension needed. 
