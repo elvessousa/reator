@@ -42,6 +42,7 @@ impl Template {
     pub fn to_string(template: &Self, name: &str) -> String {
         let body = contents::Content {
             name: name.to_owned(),
+            template,
         };
 
         match template {

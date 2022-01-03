@@ -1,13 +1,14 @@
 mod strings;
 
-use crate::{commands::Options, Arguments};
+use crate::{commands::Options, template::Template, validation::Validation, Arguments};
 use std::{env, path::Path};
 
-pub struct Content {
+pub struct Content<'a> {
     pub name: String,
+    pub template: &'a Template,
 }
 
-impl Content {
+impl<'a> Content<'a> {
     fn imports(&self, kind: &str) -> String {
         let import = match kind {
             "rc" | "cc" => strings::REACT_IMPORT,
@@ -24,8 +25,9 @@ impl Content {
 
     fn style_import(&self) -> String {
         let args = Arguments::new(env::args()).unwrap();
+        let options = Validation.styling(self.template, &args.option, false);
 
-        match Options::from(&args.option) {
+        match options {
             Some(Options::ReactNativeStyle) => {
                 format!("import {{ styles }} from './styles';\n\n")
             }
@@ -51,42 +53,57 @@ impl Content {
         }
     }
 
-    fn is_typescript(&self) -> bool {
-        Path::new("./tsconfig.json").exists()
-    }
-
-    fn body(&self, content: String, kind: &str) -> String {
-        let imports = self.imports(kind);
-        let typing = self.typings(kind);
-
+    fn default(&self, kind: &str) -> String {
         let default = match kind {
             "np" | "tnp" | "ns" | "tns" => "default ",
             _ => "",
         };
 
+        default.to_owned()
+    }
+
+    fn props(&self, kind: &str) -> String {
         let props = match kind {
             "tcc" | "tcn" => "{ children }: Props",
             "cc" | "cn" => "{ children }",
             _ => "",
         };
 
+        props.to_owned()
+    }
+
+    fn is_typescript(&self) -> bool {
+        Path::new("./tsconfig.json").exists()
+    }
+
+    fn body(&self, kind: &str) -> String {
+        let imports = self.imports(kind);
+        let typing = self.typings(kind);
+        let default = self.default(kind);
+        let props = self.props(kind);
+
+        let contents = match kind {
+            "rn" | "trn" | "cn" | "tcn" => format!("<View><Text>{}</Text></View>", self.name),
+            _ => format!("<div>{}</div>", self.name),
+        };
+
         format!(
             "{}{}export {}function {}({}) {{\n  return (\n    {}\n  );\n}}",
-            imports, typing, default, self.name, props, content
+            imports, typing, default, self.name, props, contents
         )
     }
 
     pub fn component(&self) -> String {
-        format!("{}", self.body(format!("<div>{}</div>", self.name), "rc"))
+        self.body("rc")
     }
 
     pub fn compound(&self) -> String {
         let kind = if self.is_typescript() { "tcc" } else { "cc" };
-        format!("{}", self.body(format!("<div>{}</div>", self.name), kind))
+        self.body(kind)
     }
 
     pub fn page(&self) -> String {
-        format!("{}", self.body(format!("<div>{}</div>", self.name), "np"))
+        self.body("np")
     }
 
     pub fn ssg_page(&self) -> String {
@@ -96,8 +113,7 @@ impl Content {
             false => strings::NEXT_STATIC_PROPS,
         };
 
-        let body = format!("{}", self.body(format!("<div>{}</div>", self.name), kind));
-        format!("{}\n{}", body, props)
+        format!("{}\n{}", self.body(kind), props)
     }
 
     pub fn ssr_page(&self) -> String {
@@ -107,19 +123,16 @@ impl Content {
             false => strings::NEXT_SSR_PROPS,
         };
 
-        let body = format!("{}", self.body(format!("<div>{}</div>", self.name), kind));
-        format!("{}\n{}", body, props)
+        format!("{}\n{}", self.body(kind), props)
     }
 
     pub fn native(&self) -> String {
-        let contents = format!("<View><Text>{}</Text></View>", self.name);
-        format!("{}", self.body(contents, "rn"))
+        self.body("rn")
     }
 
     pub fn native_compound(&self) -> String {
         let kind = if self.is_typescript() { "tcn" } else { "cn" };
-        let contents = format!("<View><Text>{}</Text></View>", self.name);
-        format!("{}", self.body(contents, kind))
+        self.body(kind)
     }
 
     pub fn context(&self) -> String {

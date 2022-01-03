@@ -2,6 +2,7 @@ pub mod commands;
 pub mod file;
 pub mod messages;
 pub mod template;
+pub mod validation;
 
 use commands::Commands;
 use messages::warnings;
