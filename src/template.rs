@@ -30,7 +30,7 @@ impl Template {
             "native-style" | "rns" => Some(Self::RNStyle),
             "next-doc" | "nd" => Some(Self::NextDoc),
             "next-page" | "np" => Some(Self::NextPage),
-            "next-static" | "ns" => Some(Self::NextStatic),
+            "next-ssg" | "ns" => Some(Self::NextStatic),
             "next-ssr" | "nss" => Some(Self::NextSSR),
             "sass" | "scss" => Some(Self::SassModule),
             "stateless" | "st" => Some(Self::StatelessComponent),
@@ -39,12 +39,12 @@ impl Template {
         }
     }
 
-    pub fn to_string(template: &str, name: &str) -> String {
+    pub fn to_string(template: &Self, name: &str) -> String {
         let body = contents::Content {
             name: name.to_owned(),
         };
 
-        match Template::from(template).unwrap() {
+        match template {
             Template::Component => body.component(),
             Template::CompoundComponent => body.compound(),
             Template::Context => body.context(),
@@ -62,8 +62,8 @@ impl Template {
         }
     }
 
-    pub fn to_path(template: &str) -> String {
-        let path = match Template::from(template).unwrap() {
+    pub fn to_path(template: &Self) -> String {
+        let path = match template {
             Template::Context => "./src/contexts/",
             Template::NextDoc | Template::NextPage => "./src/pages/",
             Template::NextStatic | Template::NextSSR => "./src/pages/",
