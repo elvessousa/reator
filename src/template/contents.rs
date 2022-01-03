@@ -1,6 +1,6 @@
 mod strings;
 
-use crate::{Arguments, Options};
+use crate::{commands::Options, Arguments};
 use std::{env, path::Path};
 
 pub struct Content {
