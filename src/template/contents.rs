@@ -24,7 +24,13 @@ impl<'a> Content<'a> {
     }
 
     fn style_import(&self) -> String {
-        let args = Arguments::new(env::args()).unwrap();
+        let args = Arguments::new(env::args()).unwrap_or(Arguments {
+            command: "new".to_owned(),
+            template: "".to_owned(),
+            path: "".to_owned(),
+            option: "".to_owned(),
+        });
+
         let options = Validation.styling(self.template, &args.option, false);
 
         match options {
@@ -162,7 +168,9 @@ impl<'a> Content<'a> {
     }
 
     pub fn stateless(&self) -> String {
-        format!("{}", strings::REACT_STATELESS.replace("[name]", &self.name))
+        strings::REACT_STATELESS
+            .replace("[name]", &self.name)
+            .to_owned()
     }
 
     pub fn style(&self) -> String {
@@ -175,5 +183,85 @@ impl<'a> Content<'a> {
 
     pub fn styled_component(&self) -> String {
         strings::REACT_STYLED.to_owned()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn new_content<'a>() -> Content<'a> {
+        Content {
+            name: "TestContent".to_owned(),
+            template: &Template::Component,
+        }
+    }
+
+    #[test]
+    fn does_not_return_empty_strings() {
+        let content = new_content();
+
+        let component = content.component();
+        let compound = content.compound();
+        let context = content.context();
+        let native = content.native();
+        let ncompound = content.native_compound();
+        let page = content.page();
+        let ssg = content.ssg_page();
+        let ssr = content.ssr_page();
+        let style = content.style();
+        let style_module = content.style_module();
+        let styled = content.styled_component();
+
+        assert!(component.contains(&content.name));
+        assert!(compound.contains(&content.name));
+        assert!(context.contains(&content.name));
+        assert!(native.contains(&content.name));
+        assert!(ncompound.contains(&content.name));
+        assert!(page.contains(&content.name));
+        assert!(ssg.contains(&content.name));
+        assert!(ssr.contains(&content.name));
+        assert_ne!(style, "".to_owned());
+        assert_ne!(style_module, "".to_owned());
+        assert_ne!(styled, "".to_owned());
+    }
+
+    #[test]
+    fn compound_components_have_children() {
+        let content = new_content();
+        let component = content.compound();
+        let native_compound = content.native_compound();
+
+        assert!(component.contains("children:"));
+        assert!(native_compound.contains("children:"));
+    }
+
+    #[test]
+    fn native_components_imports_react() {
+        let content = new_content();
+        let native = content.native();
+        let ncompound = content.native_compound();
+
+        assert!(native.contains("import React"));
+        assert!(ncompound.contains("import React"));
+    }
+
+    #[test]
+    fn native_components_contains_views() {
+        let content = new_content();
+        let native = content.native();
+        let ncompound = content.native_compound();
+
+        assert!(native.contains("<View>"));
+        assert!(ncompound.contains("<View>"));
+    }
+
+    #[test]
+    fn ssg_and_ssr_differs() {
+        let content = new_content();
+        let ssg = content.ssg_page();
+        let ssr = content.ssr_page();
+
+        assert_ne!(ssg, ssr);
     }
 }

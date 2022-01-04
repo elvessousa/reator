@@ -106,3 +106,60 @@ impl ReactFile {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn detect_correct_extension() {
+        let ts = Path::new("./tsconfig.json").exists();
+
+        if ts {
+            assert_eq!(ReactFile.extension(true), ".ts");
+            assert_eq!(ReactFile.extension(false), ".tsx");
+        } else {
+            assert_eq!(ReactFile.extension(false), ".js");
+        }
+    }
+
+    #[test]
+    fn creates_a_directory() {
+        let path = Path::new("./src/new_dir/");
+        assert!(!path.is_dir());
+        ReactFile.check_dirs("./src/new_dir/");
+        assert!(path.is_dir());
+
+        fs::remove_dir_all("./src/new_dir/").unwrap();
+    }
+
+    #[test]
+    fn writes_a_file() {
+        let extension = ReactFile.extension(false);
+        let new_file = format!("{}{}", "./TestComponent", extension);
+        ReactFile
+            .write(&new_file, &Template::Component, "TestComponent")
+            .unwrap();
+        fs::read(&new_file).unwrap();
+        fs::remove_file(new_file).unwrap();
+    }
+
+    #[test]
+    fn create_correct_path() {
+        let extension = ReactFile.extension(false);
+        let file_path = ReactFile.path(&Template::Component, "Component", &None);
+        let modl_path = ReactFile.path(
+            &Template::Component,
+            "Component",
+            &Some(Options::SassModule),
+        );
+
+        assert_eq!(
+            file_path,
+            format!("{}{}", "./src/components/Component", extension)
+        );
+
+        assert_eq!(modl_path, format!("{}", "./src/components/Component/"));
+        fs::remove_dir_all("./src/components/").unwrap();
+    }
+}

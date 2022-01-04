@@ -1,6 +1,6 @@
 mod contents;
 
-#[derive(Debug)]
+#[derive(PartialEq, Debug)]
 pub enum Template {
     Component,
     CompoundComponent,
@@ -74,5 +74,40 @@ impl Template {
         };
 
         path.to_owned()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn returns_only_valid_templates() {
+        let valid_template = Template::from("context");
+        let invalid_template = Template::from("wow");
+
+        assert_eq!(valid_template, Some(Template::Context));
+        assert_eq!(invalid_template, None);
+    }
+
+    #[test]
+    fn returns_different_template_strings() {
+        let cmp_template = Template::to_string(&Template::Component, "Context");
+        let ctx_template = Template::to_string(&Template::Context, "Context");
+
+        assert_ne!(cmp_template, "".to_owned());
+        assert_ne!(ctx_template, "".to_owned());
+        assert_ne!(cmp_template, ctx_template);
+    }
+
+    #[test]
+    fn returns_only_valid_paths() {
+        let comps_path = Template::to_path(&Template::CompoundComponent);
+        let pages_path = Template::to_path(&Template::NextStatic);
+        let style_path = Template::to_path(&Template::Styled);
+
+        assert_ne!(comps_path, pages_path);
+        assert_ne!(comps_path, style_path);
+        assert_ne!(pages_path, style_path);
     }
 }
