@@ -6,42 +6,41 @@ If you catch yourself typing to much boilerplate, you should give Reator a chanc
 ## Usage
 
 ```
-$ reator command template ComponentName [--option]
+$ reator command template ComponentName [--style-module-option]
 ```
 
 ### Commands
 
-| Commands         | Description        |
-| ---------------- | ------------------ |
-| n / new / create | Creates a new file |
-| h / help         | Shows help screen  |
+| Commands               | Description        |
+| ---------------------- | ------------------ |
+| `n` / `new` / `create` | Creates a new file |
+| `h` / `help`           | Shows help screen  |
 
 ### Templates
 
-| Template       | Description                  |
-| -------------- | ---------------------------- |
-| rc / component | React component              |
-| rnc / native   | React Native component       |
-| ct / context   | React Context API file       |
-| np / next-page | Next.js page                 |
-| nd / next-doc  | Next.js "\_document.js" file |
-| s / style      | React StyleSheet file        |
-| sc / styled    | Styled-Components file       |
+| Abbr  | Template             | Description                      |
+| ----- | -------------------- | -------------------------------- |
+| `rc`  | `component`          | React Component                  |
+| `cc`  | `compound-component` | React Compound Component         |
+| `rn`  | `native`             | React Component                  |
+| `cn`  | `compound-native`    | React Native Compound Component  |
+| `ct`  | `context`            | React Context API file           |
+| `np`  | `next-page`          | Next.js Page                     |
+| `ns`  | `next-ssg`           | Next.js Static Page              |
+| `nss` | `next-ssr`           | Next.js SSR Page                 |
+| `nd`  | `next-doc`           | Custom Next.js '\_document' file |
+| `s`   | `style`              | CSS Module                       |
+| `sc`  | `styled`             | Styled Component                 |
 
 ### Options (WIP)
 
-| Option               | Description                                         |
-| -------------------- | --------------------------------------------------- |
-| --ws / --with-jstyle | Creates a component in a folder, with a style.js    |
-| --css                | Creates a component in a folder, with a CSS Module  |
-| --sass               | Creates a component in a folder, with a Sass Module |
-| --i / --iprops       | Creates a component with a "Props" interface        |
-| --t / --tprops       | Creates a component with a "Props" type             |
+| Abbr    | Option                | Description                                                   |
+| ------- | --------------------- | ------------------------------------------------------------- |
+| `-rns`  | `--reactnative-style` | Creates a React Native Component in a folder, with a style.js |
+| `-css`  | `--css-module`        | Creates a component in a folder, with a CSS Module            |
+| `-sass` | `--sass-module`       | Creates a component in a folder, with a Sass Module           |
 
-## Todos
+## Todo
 
-- Check for package.json on component creation
-- [x] Add scss/sass/css modules option
-- Add component props option
 - Deal with filename cases (PascalCase, [nextpage])
 - Add configuration options via JSON
