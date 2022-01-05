@@ -1,6 +1,9 @@
-# Reator
+<h1 align="center">
+    <img alt="Reator Icon" title="Reator" src="./.github/reator.png" width="150px" /><br>
+    Reator
+</h1>
 
-**Reator** _[pronunced: "hay-a-tor"]_ is a simple CLI for React projects made in Rust.
+**Reator** _[pronunced: "hae-a-tor"]_ is a simple CLI for React projects made in Rust.
 If you catch yourself typing to much boilerplate, you should give Reator a chance!
 
 ## Usage
