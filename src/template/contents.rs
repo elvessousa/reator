@@ -232,8 +232,8 @@ mod tests {
         let component = content.compound();
         let native_compound = content.native_compound();
 
-        assert!(component.contains("children:"));
-        assert!(native_compound.contains("children:"));
+        assert!(component.contains("children"));
+        assert!(native_compound.contains("children"));
     }
 
     #[test]
