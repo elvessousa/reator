@@ -78,7 +78,7 @@ pub fn help() {
     sc  | styled                Styled Component
 
 {}
-    Component name only, no extension needed. 
+    ComponentName only, no extension needed. 
     Reator creates folders and files automatically.
 
 {}
@@ -89,7 +89,7 @@ pub fn help() {
         format!(" {}Usage:{}", bold, reset),
         format!(" {}Commands:{}", bold, reset),
         format!(" {}Templates:{}", bold, reset),
-        format!(" {}Path:{}", bold, reset),
+        format!(" {}ComponentName:{}", bold, reset),
         format!(" {}Styling Options:{}", bold, reset),
     )
 }
