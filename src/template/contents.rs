@@ -142,6 +142,11 @@ impl<'a> Content<'a> {
     }
 
     pub fn context(&self) -> String {
+        let imports = match self.is_typescript() {
+            true => strings::REACT_TYPED_CONTEXT_IMPORT,
+            false => strings::REACT_CONTEXT_IMPORT,
+        };
+
         let typing = match self.is_typescript() {
             true => strings::REACT_CONTEXT_TYPING,
             false => "",
@@ -154,7 +159,7 @@ impl<'a> Content<'a> {
 
         format!(
             "{}{}{}",
-            strings::REACT_CONTEXT_IMPORT,
+            imports,
             typing.replace("[name]", &self.name),
             content.replace("[name]", &self.name)
         )

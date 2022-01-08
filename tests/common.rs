@@ -8,7 +8,7 @@ pub fn get_available_components<'a>() -> HashMap<&'a str, &'a str> {
     components.insert("component", "Component");
     components.insert("compound-component", "CompoundComponent");
     components.insert("compound-native", "NativeCompoundComponent");
-    components.insert("context", "NewContext");
+    components.insert("context", "New");
     components.insert("native", "NativeComponent");
     components.insert("next-doc", "NextDocument");
     components.insert("next-page", "NextPage");
@@ -33,6 +33,7 @@ pub fn get_name(name: &str, template: &Template) -> String {
     match template {
         Template::NextDoc => "_document".to_owned(),
         Template::NextPage | Template::NextStatic | Template::NextSSR => name.to_lowercase(),
+        Template::Context => format!("{}Context", name),
         _ => name.to_owned(),
     }
 }

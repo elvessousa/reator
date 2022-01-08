@@ -93,6 +93,7 @@ impl ReactFile {
         match template {
             Template::NextDoc => "_document".to_owned(),
             Template::NextPage | Template::NextStatic | Template::NextSSR => name.to_lowercase(),
+            Template::Context => format!("{}Context", name),
             _ => name.to_owned(),
         }
     }

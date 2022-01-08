@@ -2,6 +2,7 @@
 pub const REACT_IMPORT: &str = "import React from 'react';\n\n";
 pub const REACT_TYPED_IMPORT: &str = "import { ReactNode } from 'react';\n\n";
 pub const REACT_CONTEXT_IMPORT: &str = "import { createContext } from 'react';\n";
+pub const REACT_TYPED_CONTEXT_IMPORT: &str = "import { createContext, ReactNode } from 'react';\n";
 pub const NEXT_TYPED_SSG_IMPORT: &str = "import { GetStaticProps } from 'next';\n\n";
 pub const NEXT_TYPED_SSR_IMPORT: &str = "import { GetServerSideProps } from 'next';\n\n";
 pub const REACT_NATIVE_IMPORT: &str =
@@ -45,7 +46,7 @@ export function [name]Provider({ children }) {
 
 pub const REACT_CONTEXT_TYPED: &str = r#"export const [name]Context = createContext({} as [name]Data);
 
-export function [name]Provider({ children }) {
+export function [name]Provider({ children }: [name]ProviderProps) {
   return (
     <[name]Context.Provider value={[]}>
       {children}
