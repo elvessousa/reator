@@ -45,5 +45,4 @@ $ reator command template ComponentName [--style-module-option]
 
 ## Todo
 
-- Deal with filename cases (PascalCase, [nextpage])
 - Add configuration options via JSON
