@@ -25,7 +25,8 @@ $ reator command template ComponentName [--style-module-option]
 | ----- | -------------------- | -------------------------------- |
 | `rc`  | `component`          | React Component                  |
 | `cc`  | `compound-component` | React Compound Component         |
-| `rn`  | `native`             | React Component                  |
+| `rn`  | `native`             | React Native Component           |
+| `nsc` | `native-screen`      | React Native Screen              |
 | `cn`  | `compound-native`    | React Native Compound Component  |
 | `ct`  | `context`            | React Context API file           |
 | `np`  | `next-page`          | Next.js Page                     |
