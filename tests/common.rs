@@ -10,6 +10,7 @@ pub fn get_available_components<'a>() -> HashMap<&'a str, &'a str> {
     components.insert("compound-native", "NativeCompoundComponent");
     components.insert("context", "New");
     components.insert("native", "NativeComponent");
+    components.insert("native-screen", "NativeScreen");
     components.insert("next-doc", "NextDocument");
     components.insert("next-page", "NextPage");
     components.insert("next-ssr", "NextSSRPage");
@@ -101,8 +102,9 @@ pub fn run_with_args(command: &str, template: &str, path: &str, option: &str) {
 pub fn cleanup() {
     let paths = vec![
         "./src/components/",
-        "./src/pages/",
         "./src/contexts/",
+        "./src/pages/",
+        "./src/screens/",
         "./src/styles/",
     ];
 

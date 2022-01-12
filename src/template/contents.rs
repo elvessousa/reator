@@ -12,7 +12,7 @@ impl<'a> Content<'a> {
     fn imports(&self, kind: &str) -> String {
         let import = match kind {
             "rc" | "cc" => strings::REACT_IMPORT,
-            "rn" | "cn" => strings::REACT_NATIVE_IMPORT,
+            "rn" | "cn" | "nsc" => strings::REACT_NATIVE_IMPORT,
             "tcc" => strings::REACT_TYPED_IMPORT,
             "tcn" => strings::REACT_NATIVE_TYPED_IMPORT,
             "tns" => strings::NEXT_TYPED_SSG_IMPORT,
@@ -61,7 +61,7 @@ impl<'a> Content<'a> {
 
     fn default(&self, kind: &str) -> String {
         let default = match kind {
-            "np" | "tnp" | "ns" | "tns" => "default ",
+            "np" | "tnp" | "ns" | "tns" | "nsc" => "default ",
             _ => "",
         };
 
@@ -89,7 +89,9 @@ impl<'a> Content<'a> {
         let props = self.props(kind);
 
         let contents = match kind {
-            "rn" | "trn" | "cn" | "tcn" => format!("<View><Text>{}</Text></View>", self.name),
+            "rn" | "trn" | "cn" | "tcn" | "nsc" => {
+                format!("<View><Text>{}</Text></View>", self.name)
+            }
             _ => format!("<div>{}</div>", self.name),
         };
 
@@ -134,6 +136,10 @@ impl<'a> Content<'a> {
 
     pub fn native(&self) -> String {
         self.body("rn")
+    }
+
+    pub fn native_screen(&self) -> String {
+        self.body("nsc")
     }
 
     pub fn native_compound(&self) -> String {
@@ -246,9 +252,11 @@ mod tests {
         let content = new_content();
         let native = content.native();
         let ncompound = content.native_compound();
+        let native_screen = content.native_screen();
 
         assert!(native.contains("import React"));
         assert!(ncompound.contains("import React"));
+        assert!(native_screen.contains("import React"));
     }
 
     #[test]
@@ -256,9 +264,11 @@ mod tests {
         let content = new_content();
         let native = content.native();
         let ncompound = content.native_compound();
+        let native_screen = content.native_screen();
 
         assert!(native.contains("<View>"));
         assert!(ncompound.contains("<View>"));
+        assert!(native_screen.contains("<View>"));
     }
 
     #[test]
