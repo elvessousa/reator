@@ -36,10 +36,10 @@ impl Validation {
                 _ => None,
             },
             Some(_) => match template {
-                Template::NativeComponent | Template::NativeCompoundComponent => None,
                 Template::Context => None,
+                Template::NativeComponent | Template::NativeCompoundComponent => None,
+                Template::NextDoc | Template::NextAPIRoute => None,
                 Template::SassModule | Template::RNStyle | Template::Styled => None,
-                Template::NextDoc => None,
                 _ => option,
             },
             None => None,
@@ -57,12 +57,13 @@ impl Validation {
                 _ => WARN_INVALID_RN_ONLY_STYLE,
             },
             Some(_) => match template {
+                Template::Context => WARN_CONTEXT_STYLING,
                 Template::NativeComponent | Template::NativeCompoundComponent => {
                     WARN_INVALID_RN_STYLE
                 }
-                Template::SassModule | Template::RNStyle | Template::Styled => WARN_INVALID_STYLE,
-                Template::Context => WARN_CONTEXT_STYLING,
+                Template::NextAPIRoute => WARN_API_STYLING,
                 Template::NextDoc => WARN_NDOC_STYLING,
+                Template::SassModule | Template::RNStyle | Template::Styled => WARN_INVALID_STYLE,
                 _ => "",
             },
             None => "",
