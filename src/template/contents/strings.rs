@@ -79,6 +79,18 @@ class MyDocument extends Document {
 
 export default MyDocument;"#;
 
+pub const NEXT_API_ROUTE: &str = r#"export default function handler(req, res) {
+  res.status(200).json({ name: 'John Doe' });
+}
+"#;
+
+pub const NEXT_API_ROUTE_TS: &str = r#"import { NextApiRequest, NextApiResponse } from 'next';
+
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  res.status(200).json({ name: 'John Doe' });
+}
+"#;
+
 pub const NEXT_DOCUMENT_TS: &str = r#"import Document, { DocumentContext, Html, Head, Main, NextScript } from 'next/document';
 
 class MyDocument extends Document {

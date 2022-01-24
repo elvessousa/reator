@@ -171,6 +171,13 @@ impl<'a> Content<'a> {
         )
     }
 
+    pub fn next_api_route(&self) -> String {
+        match self.is_typescript() {
+            true => strings::NEXT_API_ROUTE_TS.to_owned(),
+            false => strings::NEXT_API_ROUTE.to_owned(),
+        }
+    }
+
     pub fn document(&self) -> String {
         match self.is_typescript() {
             true => strings::NEXT_DOCUMENT_TS.to_owned(),
@@ -212,6 +219,7 @@ mod tests {
     fn does_not_return_empty_strings() {
         let content = new_content();
 
+        let api_route = content.next_api_route();
         let component = content.component();
         let compound = content.compound();
         let context = content.context();
@@ -224,6 +232,7 @@ mod tests {
         let style_module = content.style_module();
         let styled = content.styled_component();
 
+        assert!(api_route.contains("handler"));
         assert!(component.contains(&content.name));
         assert!(compound.contains(&content.name));
         assert!(context.contains(&content.name));

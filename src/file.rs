@@ -58,7 +58,7 @@ impl ReactFile {
         let filename = self.filename(template, name);
 
         let extension = match template {
-            Template::RNStyle | Template::Styled => self.extension(true),
+            Template::RNStyle | Template::Styled | Template::NextAPIRoute => self.extension(true),
             Template::SassModule => ".scss",
             Template::StyleModule => ".css",
             _ => self.extension(false),
@@ -92,7 +92,10 @@ impl ReactFile {
     fn filename(&self, template: &Template, name: &str) -> String {
         match template {
             Template::NextDoc => "_document".to_owned(),
-            Template::NextPage | Template::NextStatic | Template::NextSSR => name.to_lowercase(),
+            Template::NextPage
+            | Template::NextStatic
+            | Template::NextSSR
+            | Template::NextAPIRoute => name.to_lowercase(),
             Template::Context => format!("{}Context", name),
             _ => name.to_owned(),
         }

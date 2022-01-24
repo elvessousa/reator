@@ -8,6 +8,7 @@ pub enum Template {
     NativeComponent,
     NativeCompoundComponent,
     NativeScreen,
+    NextAPIRoute,
     NextDoc,
     NextPage,
     NextStatic,
@@ -30,6 +31,7 @@ impl Template {
             "native" | "rn" => Some(Self::NativeComponent),
             "native-style" | "rns" => Some(Self::RNStyle),
             "native-screen" | "nsc" => Some(Self::NativeScreen),
+            "next-api" | "na" => Some(Self::NextAPIRoute),
             "next-doc" | "nd" => Some(Self::NextDoc),
             "next-page" | "np" => Some(Self::NextPage),
             "next-ssg" | "ns" => Some(Self::NextStatic),
@@ -54,6 +56,7 @@ impl Template {
             Template::NativeComponent => body.native(),
             Template::NativeCompoundComponent => body.native_compound(),
             Template::NativeScreen => body.native_screen(),
+            Template::NextAPIRoute => body.next_api_route(),
             Template::NextDoc => body.document(),
             Template::NextPage => body.page(),
             Template::NextSSR => body.ssr_page(),
@@ -71,6 +74,7 @@ impl Template {
             Template::Context => "./src/contexts/",
             Template::NextDoc | Template::NextPage => "./src/pages/",
             Template::NextStatic | Template::NextSSR => "./src/pages/",
+            Template::NextAPIRoute => "./src/pages/api/",
             Template::RNStyle | Template::SassModule => "./src/styles/",
             Template::StyleModule | Template::Styled => "./src/styles/",
             Template::NativeScreen => "./src/screens/",
@@ -108,10 +112,12 @@ mod tests {
     fn returns_only_valid_paths() {
         let comps_path = Template::to_path(&Template::CompoundComponent);
         let pages_path = Template::to_path(&Template::NextStatic);
+        let napi_path = Template::to_path(&Template::NextAPIRoute);
         let style_path = Template::to_path(&Template::Styled);
 
         assert_ne!(comps_path, pages_path);
         assert_ne!(comps_path, style_path);
         assert_ne!(pages_path, style_path);
+        assert_ne!(pages_path, napi_path);
     }
 }

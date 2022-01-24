@@ -11,6 +11,7 @@ pub fn get_available_components<'a>() -> HashMap<&'a str, &'a str> {
     components.insert("context", "New");
     components.insert("native", "NativeComponent");
     components.insert("native-screen", "NativeScreen");
+    components.insert("next-api", "NextAPIRoute");
     components.insert("next-doc", "NextDocument");
     components.insert("next-page", "NextPage");
     components.insert("next-ssr", "NextSSRPage");
@@ -33,20 +34,28 @@ pub fn get_available_styles<'a>() -> HashMap<&'a str, &'a str> {
 pub fn get_name(name: &str, template: &Template) -> String {
     match template {
         Template::NextDoc => "_document".to_owned(),
-        Template::NextPage | Template::NextStatic | Template::NextSSR => name.to_lowercase(),
+        Template::NextPage | Template::NextStatic | Template::NextSSR | Template::NextAPIRoute => {
+            name.to_lowercase()
+        }
         Template::Context => format!("{}Context", name),
         _ => name.to_owned(),
     }
 }
 
 pub fn read_file(file: &str, template: &str) -> String {
+    let template = Template::from(template).unwrap();
+    let base_path = Template::to_path(&template);
     let extension = match Path::new("tsconfig.json").exists() {
-        true => ".tsx",
+        true => {
+            if base_path.contains("pages/api") {
+                ".ts"
+            } else {
+                ".tsx"
+            }
+        }
         false => ".js",
     };
 
-    let template = Template::from(template).unwrap();
-    let base_path = Template::to_path(&template);
     let file_name = format!("{}{}{}", base_path, get_name(file, &template), extension);
     let mut contents = String::new();
 
