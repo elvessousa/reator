@@ -2,6 +2,8 @@
 pub const REACT_IMPORT: &str = "import React from 'react';\n\n";
 pub const REACT_TYPED_IMPORT: &str = "import { ReactNode } from 'react';\n\n";
 pub const REACT_CONTEXT_IMPORT: &str = "import { createContext } from 'react';\n";
+pub const GATSBY_TYPED_IMPORT: &str =
+    "import React from 'react';\nimport { PageProps } from 'gatsby';\n\n";
 pub const REACT_TYPED_CONTEXT_IMPORT: &str = "import { createContext, ReactNode } from 'react';\n";
 pub const NEXT_TYPED_SSG_IMPORT: &str = "import { GetStaticProps } from 'next';\n\n";
 pub const NEXT_TYPED_SSR_IMPORT: &str = "import { GetServerSideProps } from 'next';\n\n";
@@ -142,6 +144,16 @@ export const getStaticProps: GetStaticProps = async (context) => {
 pub const NEXT_SSR_PROPS_TS: &str = r#"
 export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
+    props: {},
+  }
+}
+"#;
+
+pub const GATSBY_SSR_SERVERDATA: &str = r#"
+export async function getServerData() {
+  return {
+    status: 200,
+    headers: {},
     props: {},
   }
 }

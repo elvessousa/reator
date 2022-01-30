@@ -92,7 +92,8 @@ impl ReactFile {
     fn filename(&self, template: &Template, name: &str) -> String {
         match template {
             Template::NextDoc => "_document".to_owned(),
-            Template::NextPage
+            Template::GatsbySSR
+            | Template::NextPage
             | Template::NextStatic
             | Template::NextSSR
             | Template::NextAPIRoute => name.to_lowercase(),

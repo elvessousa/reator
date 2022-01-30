@@ -15,6 +15,7 @@ pub fn get_available_components<'a>() -> HashMap<&'a str, &'a str> {
     components.insert("next-doc", "NextDocument");
     components.insert("next-page", "NextPage");
     components.insert("next-ssr", "NextSSRPage");
+    components.insert("gatsby-ssr", "GatsbySSRPage");
     components.insert("next-ssg", "NextSSGPage");
     components.insert("stateless", "StatelessComponent");
 
@@ -34,9 +35,11 @@ pub fn get_available_styles<'a>() -> HashMap<&'a str, &'a str> {
 pub fn get_name(name: &str, template: &Template) -> String {
     match template {
         Template::NextDoc => "_document".to_owned(),
-        Template::NextPage | Template::NextStatic | Template::NextSSR | Template::NextAPIRoute => {
-            name.to_lowercase()
-        }
+        Template::NextPage
+        | Template::NextStatic
+        | Template::NextSSR
+        | Template::NextAPIRoute
+        | Template::GatsbySSR => name.to_lowercase(),
         Template::Context => format!("{}Context", name),
         _ => name.to_owned(),
     }

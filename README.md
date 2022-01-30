@@ -29,6 +29,7 @@ $ reator command template ComponentName [--style-module-option]
 | `nsc` | `native-screen`      | React Native Screen              |
 | `cn`  | `compound-native`    | React Native Compound Component  |
 | `ct`  | `context`            | React Context API file           |
+| `gs`  | `gatsby-ssr`         | Gatsby.js SSR Page               |
 | `na`  | `next-api`           | Next.js API Route                |
 | `np`  | `next-page`          | Next.js Page                     |
 | `ns`  | `next-ssg`           | Next.js Static Page              |

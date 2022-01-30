@@ -11,10 +11,11 @@ pub struct Content<'a> {
 impl<'a> Content<'a> {
     fn imports(&self, kind: &str) -> String {
         let import = match kind {
-            "rc" | "cc" => strings::REACT_IMPORT,
+            "rc" | "cc" | "gs" => strings::REACT_IMPORT,
             "rn" | "cn" | "nsc" => strings::REACT_NATIVE_IMPORT,
             "tcc" => strings::REACT_TYPED_IMPORT,
             "tcn" => strings::REACT_NATIVE_TYPED_IMPORT,
+            "tgs" => strings::GATSBY_TYPED_IMPORT,
             "tns" => strings::NEXT_TYPED_SSG_IMPORT,
             "tnss" => strings::NEXT_TYPED_SSR_IMPORT,
             _ => "",
@@ -70,8 +71,10 @@ impl<'a> Content<'a> {
 
     fn props(&self, kind: &str) -> String {
         let props = match kind {
-            "tcc" | "tcn" => "{ children }: Props",
             "cc" | "cn" => "{ children }",
+            "gs" => "{ serverData }",
+            "tcc" | "tcn" => "{ children }: Props",
+            "tgs" => "{ serverData }: PageProps",
             _ => "",
         };
 
@@ -130,6 +133,13 @@ impl<'a> Content<'a> {
             true => strings::NEXT_SSR_PROPS_TS,
             false => strings::NEXT_SSR_PROPS,
         };
+
+        format!("{}\n{}", self.body(kind), props)
+    }
+
+    pub fn ssr_gatsby(&self) -> String {
+        let kind = if self.is_typescript() { "tgs" } else { "gs" };
+        let props = strings::GATSBY_SSR_SERVERDATA;
 
         format!("{}\n{}", self.body(kind), props)
     }
